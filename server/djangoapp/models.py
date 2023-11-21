@@ -19,6 +19,23 @@ class Dealership(models.Model):
 
     def __str__(self):
         return f"{self.short_name} ({self.city}, {self.state})"
+
+
+
+
+class Review(models.Model):
+    id = models.CharField(max_length=32, primary_key=True)
+    name = models.CharField(max_length=255)
+    dealership = models.IntegerField()
+    review = models.TextField()
+    purchase = models.BooleanField()
+    purchase_date = models.DateField()
+    car_make = models.CharField(max_length=50)
+    car_model = models.CharField(max_length=50)
+    car_year = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.name} - {self.car_make} {self.car_model} ({self.car_year})"
 # <HINT> Create a Car Make model `class CarMake(models.Model)`:
 # - Name
 # - Description
