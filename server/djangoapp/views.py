@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
 from djangoapp.models import Dealership
+from djangoapp.models import Review
 # from .restapis import related methods
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -107,3 +108,68 @@ def get_dealerships(request):
 # def add_review(request, dealer_id):
 # ...
 
+
+
+def get_dealer_details(request, dealer_id):
+    context = {}
+    if request.method == "GET":
+        # Assuming you have a Dealer model
+        dealer = get_object_or_404(Dealer, id=dealer_id)
+        
+        # Assuming you have a Review model with a foreign key to Dealer
+        reviews = Review.objects.filter(dealership=dealer)
+        
+        context = {
+            "dealer": dealer,
+            "reviews": reviews,
+        }
+
+        return render(request, 'djangoapp/dealer_details.html', context)
+
+
+# View to submit a new review
+def add_review(request, dealer_id):
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            # Assuming you have a Dealer model
+            dealer = get_object_or_404(Dealer, id=dealer_id)
+            
+            # Assuming you have a CarModel model
+            cars = CarModel.objects.all()
+            
+            context = {
+                "cars": cars,
+                "dealer": dealer,
+            }
+            return render(request, 'djangoapp/add_review.html', context)
+
+        if request.method == "POST":
+            form = request.POST
+            review = dict()
+            review["name"] = f"{request.user.first_name} {request.user.last_name}"
+            review["dealership"] = dealer_id
+            review["review"] = form["content"]
+            review["purchase"] = form.get("purchasecheck")
+            
+            if review["purchase"]:
+                purchase_date = form.get("purchasedate")
+                if purchase_date:
+                    review["purchase_date"] = datetime.strptime(purchase_date, "%m/%d/%Y").isoformat()
+            else:
+                review["purchase_date"] = None
+
+            car_id = form["car"]
+            car = get_object_or_404(CarModel, pk=car_id)
+            review["car_make"] = car.car_make.name
+            review["car_model"] = car.name
+            review["car_year"] = car.year
+
+            # Assuming you have a Review model
+            Review.objects.create(**review)
+
+            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
+
+    else:
+        # If user isn't logged in, redirect to login page
+        print("User must be authenticated before posting a review. Please log in.")
+        return redirect("/djangoapp/login")
