@@ -16,7 +16,7 @@ class Command(BaseCommand):
                 "dealership": 15,
                 "review": "Total grid-enabled service-desk",
                 "purchase": True,
-                "purchase_date": "07/11/2020",
+                "purchase_date": "2020-11-07",
                 "car_make": "Audi",
                 "car_model": "A6",
                 "car_year": 2010
@@ -28,8 +28,8 @@ class Command(BaseCommand):
                 "name": "Gwenora Zettoi",
                 "dealership": 23,
                 "review": "Future-proofed foreground capability",
-                "purchase": true,
-                "purchase_date": "09/17/2020",
+                "purchase": True,
+                "purchase_date": "2020-09-17",
                 "car_make": "Pontiac",
                 "car_model": "Firebird",
                 "car_year": 1995
@@ -41,8 +41,8 @@ class Command(BaseCommand):
                 "name": "Lion Reames",
                 "dealership": 29,
                 "review": "Expanded global groupware",
-                "purchase": true,
-                "purchase_date": "10/20/2020",
+                "purchase": True,
+                "purchase_date": "2020-10-10",
                 "car_make": "Mazda",
                 "car_model": "MX-5",
                 "car_year": 2003
@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 "name": "Iorgos Colley",
                 "dealership": 13,
                 "review": "Optional heuristic software",
-                "purchase": false
+                "purchase": False
             },
             {
                 "_id": "459d89f48acfae5cb2d0af0ebe6c378c",
@@ -63,7 +63,7 @@ class Command(BaseCommand):
                 "name": "Kissee Noirel",
                 "dealership": 46,
                 "review": "Diverse client-server success",
-                "purchase": false
+                "purchase": False
             }
             
             # Add more data as needed
@@ -71,6 +71,30 @@ class Command(BaseCommand):
 
         # Clear existing data
         Review.objects.all().delete()
+
+        for data in json_data:
+            try:
+                purchase_date = data['purchase_date']
+            except KeyError:
+                purchase_date = '2020-01-01'
+
+        for data in json_data:
+            try:
+                car_make=data['car_make']
+            except KeyError:
+                car_make = 'Random'
+
+        for data in json_data:
+            try:
+                car_model=data['car_model']
+            except KeyError:
+                car_model = 'Random'
+
+        for data in json_data:
+            try:
+                car_year=data['car_year']
+            except KeyError:
+                car_year = 2000
 
         # Populate the database with sample data
         for data in json_data:
@@ -80,10 +104,10 @@ class Command(BaseCommand):
                 dealership=data['dealership'],
                 review=data['review'],
                 purchase=data['purchase'],
-                purchase_date=data['purchase_date'],
-                car_make=data['car_make'],
-                car_model=data['car_model'],
-                car_year=data['car_year']
+                purchase_date=purchase_date,
+                car_make=car_make,
+                car_model=car_model,
+                car_year=car_year
             )
 
         self.stdout.write(self.style.SUCCESS('Sample review data has been successfully populated.'))
