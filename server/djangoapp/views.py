@@ -110,14 +110,15 @@ def get_dealerships(request):
 
 
 
+
 def get_dealer_details(request, dealer_id):
     context = {}
     if request.method == "GET":
         # Assuming you have a Dealer model
-        dealer = get_object_or_404(Dealer, id=dealer_id)
+        dealer = get_object_or_404(Dealership, id=dealer_id)
         
         # Assuming you have a Review model with a foreign key to Dealer
-        reviews = Review.objects.filter(dealership=dealer)
+        reviews = Review.objects.filter(dealership=dealer.id)
         
         context = {
             "dealer": dealer,
@@ -125,6 +126,8 @@ def get_dealer_details(request, dealer_id):
         }
 
         return render(request, 'djangoapp/dealer_details.html', context)
+
+
 
 
 # View to submit a new review
